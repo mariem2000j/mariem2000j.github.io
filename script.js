@@ -75,7 +75,6 @@ const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        // In a real implementation, you would send the form data to a server
         alert('Thank you for your message! I will get back to you soon.');
         contactForm.reset();
     });
