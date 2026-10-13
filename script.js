@@ -1,13 +1,18 @@
 // Typing effect for hero section
 const typingText = document.querySelector('.typing-text');
-const roles = ["Data Science Student", "AI & ML Enthusiast", "Generative AI Explorer"];
+const roles = [
+    "Data Science Engineer",
+    "AI & ML Enthusiast",
+    "LLM & Generative AI Explorer"
+];
 let roleIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
 
 function typeEffect() {
+    if (!typingText) return;
     const currentRole = roles[roleIndex];
-    
+
     if (!isDeleting) {
         // Type characters
         if (charIndex < currentRole.length) {
@@ -60,7 +65,7 @@ const appearOnScroll = () => {
     fadeElements.forEach(element => {
         const elementTop = element.getBoundingClientRect().top;
         const elementVisible = 150;
-        
+
         if (elementTop < window.innerHeight - elementVisible) {
             element.classList.add('appear');
         }
@@ -70,12 +75,42 @@ const appearOnScroll = () => {
 window.addEventListener('scroll', appearOnScroll);
 window.addEventListener('load', appearOnScroll);
 
-// Form submission
+// Contact form: sends the message to my Gmail through Web3Forms
 const contactForm = document.getElementById('contactForm');
+const formStatus = document.getElementById('formStatus');
+
 if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        alert('Thank you for your message! I will get back to you soon.');
-        contactForm.reset();
+
+        const submitBtn = contactForm.querySelector('.submit-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        formStatus.textContent = '';
+        formStatus.className = 'form-status';
+
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json' },
+                body: new FormData(contactForm)
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                formStatus.textContent = 'Thank you! Your message has been sent. I will get back to you soon.';
+                formStatus.classList.add('success');
+                contactForm.reset();
+            } else {
+                throw new Error(result.message || 'Something went wrong');
+            }
+        } catch (error) {
+            formStatus.textContent = 'Sorry, your message could not be sent. Please email me directly at jerbi.meriem2007@gmail.com.';
+            formStatus.classList.add('error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     });
 }
